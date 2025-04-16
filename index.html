@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Meine To-Do-Liste</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#317EFB"/>
+  <style>
+    body { font-family: sans-serif; padding: 1em; max-width: 600px; margin: auto; }
+    h2 { color: #317EFB; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 0.5em; border: 1px solid #ccc; margin-bottom: 0.5em; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Meine To-Do-Liste</h2>
+  <ul id="todo-list">
+    <li>📝 Aufgabe 1</li>
+    <li>📝 Aufgabe 2</li>
+  </ul>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
+</body>
+</html>
