@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Interaktive To-Do-Liste</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      margin: 0;
+      background-color: #f9f9f9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    tr.draggable {
+      cursor: move;
+    }
+    input[type="text"], input[type="date"], select {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 8px 12px;
+      font-size: 1.1em;
+      cursor: pointer;
+      margin-top: 5px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    button.delete {
+      background-color: #f44336;
+    }
+    .legende {
+      margin-top: 20px;
+      font-size: 1em;
+    }
+    .legende strong {
+      font-size: 1.2em;
+    }
+    @media print {
+      body {
+        padding: 0;
+      }
+      table {
+        margin: 0;
+      }
+      button {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h2>🗂️ Interaktive To-Do-Liste</h2>
+<p>Ziehen und sortieren per Drag & Drop – alle Felder sind beschreibbar.</p>
+
+<table id="todoTable">
+  <thead>
+    <tr>
+      <th>🟰</th>
+      <th>Aufgabe</th>
+      <th>Status</th>
+      <th>Erledigen bis</th>
+      <th>Erledigt am</th>
+      <th>🗑️</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="draggable">
+      <td>::</td>
+      <td><input type="text" placeholder="Aufgabe eingeben"></td>
+      <td>
+        <select>
+          <option value="offen">🟥 Zu erledigen</option>
+          <option value="warten">🟨 Erwarte Rückmeldung</option>
+          <option value="erledigt">🟩 Erledigt</option>
+        </select>
+      </td>
+      <td><input type="date"></td>
+      <td><input type="date"></td>
+      <td><button class="delete" onclick="deleteRow(this)"><i class="fas fa-trash-alt"></i></button></td>
+    </tr>
+  </tbody>
+</table>
+
+<button onclick="addRow()">➕ Neue Aufgabe hinzufügen</button>
+
+<div class="legende">
+  <strong>Legende:</strong><br>
+  🟩 Grün = Erledigt<br>
+  🟨 Gelb = Erwarte Rückmeldung<br>
+  🟥 Rot = Zu erledigen<br>
+  🟰 = Aufgaben können manuell sortiert werden
+</div>
+
+<script>
+  function addRow() {
+    const tbody = document.querySelector("#todoTable tbody");
+    const newRow = document.createElement("tr");
+    newRow.classList.add("draggable");
+    newRow.innerHTML = `
+      <td>::</td>
+      <td><input type="text" placeholder="Aufgabe eingeben"></td>
+      <td>
+        <select>
+          <option value="offen">🟥 Zu erledigen</option>
+          <option value="warten">🟨 Erwarte Rückmeldung</option>
+          <option value="erledigt">🟩 Erledigt</option>
+        </select>
+      </td>
+      <td><input type="date"></td>
+      <td><input type="date"></td>
+      <td><button class="delete" onclick="deleteRow(this)"><i class="fas fa-trash-alt"></i></button></td>
+    `;
+    tbody.appendChild(newRow);
+    addDnDHandlers();
+  }
+
+  function deleteRow(btn) {
+    const row = btn.closest("tr");
+    row.remove();
+  }
+
+  const tbody = document.getElementById("todoTable").querySelector("tbody");
+  let dragSrcEl = null;
+
+  function handleDragStart(e) {
+    dragSrcEl = this;
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/html", this.innerHTML);
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    return false;
+  }
+
+  function handleDrop(e) {
+    e.stopPropagation();
+    if (dragSrcEl !== this) {
+      dragSrcEl.innerHTML = this.innerHTML;
+      this.innerHTML = e.dataTransfer.getData("text/html");
+      addDnDHandlers(); // Neu binden
+    }
+    return false;
+  }
+
+  function addDnDHandlers() {
+    const rows = document.querySelectorAll("#todoTable tbody tr");
+    rows.forEach(row => {
+      row.setAttribute("draggable", "true");
+      row.addEventListener("dragstart", handleDragStart);
+      row.addEventListener("dragover", handleDragOver);
+      row.addEventListener("drop", handleDrop);
+    });
+  }
+
+  addDnDHandlers();
+</script>
+
+</body>
+</html>
